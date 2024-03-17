@@ -1,36 +1,42 @@
-import { TileLayer , MapContainer , Marker , Popup } from "react-leaflet"
-import "leaflet/dist/leaflet.css";
+import React from 'react';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
-interface Location {
+import customIcon from './cloud_Marker.png';
+
+interface MapProps {
+  location: {
     latitude: number;
     longitude: number;
     display_name: string;
-  }
-  
-  interface MapProps {
-    location: Location;
-  }
-  
+  };
+}
 
 const Map: React.FC<MapProps> = ({ location }) => {
+  function MyComponent() {
+    const map = useMapEvents({
+      click: (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng;
+        L.marker([lat, lng], 
+          { icon: L.icon({
+            iconUrl: customIcon,
+            iconSize: [36, 57] 
+        }) }).addTo(map);
+      }
+    });
+    return null;
+  }
 
-    const currentCity: Location = location;
-
-    return (
-        <MapContainer center={[52,4.35]} zoom={ 12 } scrollWheelZoom={true}>
-
-        <TileLayer
+  return (
+    <MapContainer center={[52.01,4.36]} zoom={14} scrollWheelZoom={true}>
+      <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Marker position={[ location.latitude, location.longitude ]}>
-            <Popup>
-            { currentCity.display_name }
-            </Popup>       
-        </Marker> 
+      />
+      <MyComponent />
     </MapContainer>
-    
-    )
-}
+  );
+};
 
 export default Map;
